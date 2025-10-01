@@ -1,9 +1,51 @@
-# Demo Spring Cloud Gateway
+# Demo Spring Microservices với API Gateway và Docker
+
+Dự án demo kiến trúc Microservices sử dụng **Spring Cloud Gateway** với Spring Boot 3.5 + Spring Framework 6.2
+
+## Giới thiệu
+
+Dự án này demo cách xây dựng kiến trúc Microservices sử dụng **Spring Cloud Gateway** làm API Gateway để định tuyến
+request đến các microservices backend.
+
+### Các thành phần chính:
+
+1. **API Gateway** (Port 8080) - Spring Cloud Gateway
+    - Định tuyến request đến các services
+
+2. **Student Service** (Port 8081) - Microservice quản lý sinh viên
+    - REST API cho student operations
+    - Trả về thông tin sinh viên
+
+3. **Assignment Service** (Port 8082) - Microservice quản lý bài tập
+    - REST API cho assignment operations
+    - Trả về thông tin bài tập
+
+## Kiến trúc hệ thống
+
+```
+                     ┌─────────────────┐
+                     │   Client/User   │
+                     └────────┬────────┘
+                              │
+                              ▼
+                     ┌─────────────────┐
+                     │  API Gateway    │
+                     │  (Port 8080)    │
+                     └────────┬────────┘
+                              │
+                 ┌────────────┴────────────┐
+                 ▼                         ▼
+        ┌───────────────┐         ┌────────────────┐
+        │ Student       │         │ Assignment     │
+        │ Service       │         │ Service        │
+        │ (Port 8081)   │         │ (Port 8082)    │
+        └───────────────┘         └────────────────┘
+```
 
 ## Cấu trúc dự án
 
 ```
-demo-spring-microservices-2/
+spring-microservices-demo/
 ├── gateway/                    # Dịch vụ API Gateway
 ├── student-service/           # Microservice quản lý sinh viên
 ├── assignment-service/        # Microservice quản lý bài tập
@@ -14,9 +56,9 @@ demo-spring-microservices-2/
 
 ## Công nghệ sử dụng
 
+- **Java**: 21
 - **Spring Boot**: 3.5.6
 - **Spring Cloud Gateway**: 2025.0.0
-- **Java**: 21
 - **Công cụ build**: Gradle (Kotlin DSL)
 - **Container**: Docker
 
@@ -97,8 +139,18 @@ Terminal 3 - Assignment Service:
 dịch vụ:
 
 ```yaml
-uri: http://localhost:8081  # cho student-service
-uri: http://localhost:8082  # cho assignment-service
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: student-service
+              uri: http://localhost:8081 # Thay vì http://student-service:8081
+              # ...
+            - id: assignment-service
+              uri: http://localhost:8082 # Thay vì http://assignment-service:8082
+              # ...
 ```
 
 ## Giám sát
@@ -119,3 +171,14 @@ docker compose down
 2. **Lỗi build**: Chạy `./gradlew clean` trước
 3. **Lỗi Docker**: Kiểm tra Docker daemon đã chạy
 4. **Gateway không truy cập được dịch vụ**: Đảm bảo tất cả container cùng một mạng
+
+## Tài liệu tham khảo
+
+- [Spring Cloud Gateway Documentation](https://spring.io/projects/spring-cloud-gateway)
+- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+- [Docker Documentation](https://docs.docker.com/)
+- [Gradle Documentation](https://docs.gradle.org/)
+
+## License
+
+Dự án này được cấp phép theo [MIT License](LICENSE).
