@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: apsas-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: student-service
+              uri: http://student-service:8081
+              predicates:
+                - Path=/students/**
+              filters:
+                - StripPrefix=1
+            - id: assignment-service
+              uri: http://assignment-service:8082
+              predicates:
+                - Path=/assignments/**
+              filters:
+                - StripPrefix=1
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,mappings
